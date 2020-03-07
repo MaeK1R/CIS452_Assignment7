@@ -1,65 +1,90 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿/*
+ * Matt Kirchoff
+ * Invoker.cs
+ * CIS452 Assignment 7
+ * Invoker to commands player does
+ */
 using UnityEngine;
-using UnityEngine.AI;
+using System.Collections;
+using System.Collections.Generic;
 
-public class Invoker : MonoBehaviour
+namespace CIS452_Assignment7
 {
-    //To review C# collections like Dictionaries and Stacks
-    //see http://www.newthinktank.com/2017/02/c-tutorial-11/
-
-    Dictionary<Vector3, Command> commands;
-    Command undoCommand;
-    Stack<Command> commandHistory;
-    static int counter;
-
-
-    public Invoker()
+    public class Invoker : MonoBehaviour
     {
-        commands = new Dictionary<Vector3, Command>();
-        commandHistory = new Stack<Command>();
+        public Move move;
+        public Move2 move2;
+        private Command moveCommand;
+        private Command moveCommand2;
 
-    }
+        //Note that this is not using the stack or dictionary of commands - you may need to implement those
+        //private List<Command> commandHistory;
 
-    public void AddCommand(Vector3 vector3, Command command)
-    {
-        commands.Add(vector3, command);
-    }
-
-    public void InvokeOrPressRemoteButton(Vector3 vector3)
-    {
-        //Try to get the command with the slotName
-        commands.TryGetValue(vector3, out Command command);
-        //Call execute on command if command is not null
-        if (command != null) { command.Execute(); }
-
-        //set undoCommand to command - undoCommand is not currently used
-        undoCommand = command;
-
-        //Add command to command history stack
-        commandHistory.Push(command);
-    }
-
-    public void InvokeUndoOrPressUndoButton()
-    {
-        if (commandHistory.Count != 0)
+        // Use this for initialization
+        void Start()
         {
-            Debug.Log("Undoing...");
-            Command command = commandHistory.Pop();
-            command.Undo();
-        }
-        else
-        {
-            Debug.Log("You tried to undo, but there are no more commands to undo.");
-        }
-    }
+            //creating the instance of the MoveToPoint command and passing in the receiver to its constructor
+            moveCommand = new MoveCommand(move);
+            moveCommand2 = new MoveCommand2(move2);
 
-    public void Update()
-    {
-        if(Input.GetMouseButtonDown(0))
-        {
+            //commandHistory = new List<Command>();
+
+
 
         }
-    }
 
+        // Update is called once per frame
+        void Update()
+        {
+
+            if (Input.GetMouseButtonDown(0))
+            {
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hit;
+
+                if (Physics.Raycast(ray, out hit))
+                {
+
+                    //instead of this...
+                    //agent.SetDestination(hit.point);
+
+                    //call execute on our command class
+                    moveCommand.Execute(hit.point);
+
+
+                }
+
+
+            }
+
+            if (Input.GetMouseButtonDown(1))
+            {
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hit;
+
+                if (Physics.Raycast(ray, out hit))
+                {
+
+                    //instead of this...
+                    //agent.SetDestination(hit.point);
+
+                    //call execute on our command class
+                    moveCommand2.Execute(hit.point);
+
+
+                }
+
+
+            }
+
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+
+                moveCommand.Undo();
+                moveCommand2.Undo();
+            }
+
+        }
+
+    }
 }

@@ -1,34 +1,41 @@
-﻿using System.Collections;
+﻿/*
+ * Matt Kirchoff
+ * Move.cs
+ * CIS452 Assignment 7
+ * Move object for command pattern
+ */
+ using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using UnityEngine.AI;
 
-public class Move
+namespace CIS452_Assignment7
 {
-    
-    public static NavMeshAgent agent;
+    public class Move : MonoBehaviour
+    {
+        NavMeshAgent navMeshAgent;
+        //public NavMeshAgent agent;
 
-    public static List<Vector3> locations;
-    void Start()
-    {
-        agent = GameObject.FindGameObjectWithTag("Player").GetComponent<NavMeshAgent>();
-    }
-    public static void MovePlayer(Vector3 vector3)
-    {
-        agent.SetDestination(vector3);
-        locations = new List<Vector3>();
-    }
 
-    public static void Rewind(Vector3 vector3)
-    {
-        for (int i = 0; i < locations.Count; i++)
+        public void Awake()
         {
-            if(locations[i] == vector3)
-            {
-                agent.SetDestination(vector3);
-                locations.RemoveAt(i);
-                break;
-            }
+            navMeshAgent = gameObject.GetComponent<NavMeshAgent>();
+
         }
+
+        public Vector3 GetCurrentPosition()
+        {
+            return gameObject.transform.position;
+        }
+
+
+        public void MoveCommand(Vector3 point)
+        {
+            //Debug.Log(point);
+            navMeshAgent.SetDestination(point);
+        }
+
+
+
     }
 }
